@@ -1,6 +1,12 @@
+LGP = {}
+LGP.loadstring_cache = {}
+
 if not file.IsDir("lgp", "DATA") then
 	file.CreateDir("lgp")
 end
+
+local InvalidColor = Color(180, 0, 0)
+local ValidColor = Color(0, 200, 0)
 
 local Editor = {}
 local DefaultText = [[
@@ -15,66 +21,86 @@ function Editor:OpenFile()
 	self = self:GetParent()
 end
 
-function Editor:AddTab(Name, Contents, Path)
-	local Tab = {}
-	Tab.Path = Path
-	if Name then
-		Tab.Name = Name
-	elseif Path then
-		Tab.Name = Path:match("data/lgp/(.+)%p([%u|%a])") or "New"
+function Editor:Save(Tab)
+end
+
+function Editor:Validate(Code, File)
+	local Load = CompileString(Code, File, false)
+	if type(Load) == "function" then
+		self.ValidateButton.ValidationColor = ValidColor
+		self.ValidateButton:SetText("No Lua errors were detected")
+	elseif type(Load) == "string" then
+		self.ValidateButton.ValidationColor = InvalidColor
+		self.ValidateButton:SetText("Error: "..Load)
 	else
-		Tab.Name = "New"
+		self.ValidateButton.ValidationColor = InvalidColor
+		self.ValidateButton:SetText("Failed to validate")
 	end
-	Tab.Panel = vgui.Create("DPanel")
-	Tab.TextArea = vgui.Create("DTextEntry", Tab.Panel)
+end
 
-	Tab.TextArea:SetPos(5, 5)
-	Tab.TextArea:SetSize(self:GetWide() - 315, self:GetTall() - 140)
-	Tab.TextArea:SetMultiline(true)
-	Tab.TextArea:SetTabbingDisabled(false)
-	Tab.TextArea:SetFont("LGP_Text")
-	if Contents then
-		Tab.TextArea:SetText(Contents)
+function Editor:AddTab(Name, Contents, Path)
+	if not Name then
+		if Path then
+			Name = Path:match("data/lgp/(.+)%p([%u|%a])")
+		end
+		Name = Name or "New"
 	end
 
-	function Tab.TextArea:OnKeyCodeTyped(KeyCode)
-        if KeyCode == KEY_TAB then
-            self:SetText(self:GetText().."     ")
-            self:SetCaretPos(#self:GetText())
-            self.DoFocus = true
-        end
-    end
+	local Editor = self
+	local Panel = vgui.Create("DPanel")
+	local Sheet = self.Column:AddSheet(Name, Panel)
+	local Tab = Sheet.Tab
 
-	function Tab.TextArea:OnLoseFocus(Gained)
-		if self.DoFocus then
-			self:RequestFocus()
-			self.DoFocus = nil
+	Tab.Name = Name
+	Tab.Path = Path
+	Tab.HTML = vgui.Create("DHTML", Panel)
+	Tab.HTML:Dock(FILL)
+	Tab.HTML:OpenURL("http://fi.apex.gs/luaeditor")
+	Tab.HTML:SetAllowLua(true)
+	Tab.HTML:RunJavascript([[SetContent(]]..string.format("%q", Contents)..[[)]])
+
+	function Tab:OnMousePressed(Code, ...)
+		if Code == MOUSE_RIGHT then
+			local Menu = DermaMenu(self)
+			Menu:AddOption("Save",
+				function ()
+					Editor:Save(self)
+				end
+			)
+
+			Menu:AddOption("Close",
+				function ()
+					Editor.Column:CloseTab(self, true)
+				end
+			)
+
+			Menu:Open()
+		else
+			self.BaseClass.OnMousePressed(self, Code, ...)
 		end
 	end
 
-	table.insert(self.Tab, Tab)
-	self.Column:AddSheet(Tab.Name, Tab.Panel)
+	function Tab:GetCode()
+		self.HTML:RunJavascript("getCode()")
+		return Editor.Script or ""
+	end
+
+	return Tab
+end
+
+function Editor:GetCode()
+	local Tab = self.Column:GetActiveTab()
+	return Tab:GetCode(), Tab.Name
 end
 
 function Editor:OnSelectFile(Path)
 	self:AddTab(nil, file.Read(Path, "GAME"), Path)
 end
 
-function Editor:Validate()
-end
-
-surface.CreateFont("LGP_Text",
-	{
-		font = "Century Gothic",
-		size = 20,
-	}
-)
-
 function Editor:Init()
 	local Width = 1200
 	local Height = 700
-
-	self.Tab = {}
+	local Editor = self
 
 	self:SetPos(100, 100)
 	self:SetSize(Width, Height)
@@ -108,6 +134,14 @@ function Editor:Init()
 	self.ValidateButton:SetPos(280, Height - 30)
 	self.ValidateButton:SetSize(Width - 290, 20)
 	self.ValidateButton:SetText("Validate")
+	self.ValidateButton.ValidationColor = Color(200, 200, 200)
+	function self.ValidateButton:DoClick()
+		Editor:Validate(Editor:GetCode())
+	end
+
+	function self.ValidateButton:Paint(w, h)
+		draw.RoundedBox(5, 0, 0, w, h, self.ValidationColor)
+	end
 
 	self:AddTab("Sample", DefaultText)
 	self:MakePopup()
@@ -129,23 +163,18 @@ function Editor:PerformLayout()
  	self.Column:SetPos(280, 60)
     self.Column:SetSize(Width - 290, Height - 95)
 
-    for Index, Tab in pairs(self.Tab) do
-    	Tab.TextArea:SetPos(5, 5)
-    	Tab.TextArea:SetSize(Width - 315, Height - 140)
-	end
-
     self.ValidateButton:SetPos(280, Height - 30)
 	self.ValidateButton:SetSize(Width - 290, 20)
 end
+
 
 vgui.Register("LGP_Editor", Editor, "DFrame")
 
 concommand.Add("openlgpeditor",
 	function ()
-		local Ply = LocalPlayer()
-		if Ply.Editor then
-			Ply.Editor:Remove()
+		if LGP.Editor then
+			LGP.Editor:Remove()
 		end
-		Ply.Editor = vgui.Create("LGP_Editor")
+		LGP.Editor = vgui.Create("LGP_Editor")
 	end
 )
