@@ -30,16 +30,25 @@ function TOOL:RightClick( trace )
 		}
 	)
 
-	local iNum = self:NumObjects()
-	local Phys = tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone )
-	self:SetObject( iNum + 1, tr.Entity, tr.HitPos, Phys, tr.PhysicsBone, tr.HitNormal )
+	if IsValid(tr.Entity) then
+		local iNum = self:NumObjects()
+		local Phys = tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone )
+		self:SetObject( iNum + 1, tr.Entity, tr.HitPos, Phys, tr.PhysicsBone, tr.HitNormal )
 
-	if iNum > 0 then
-		self.Pos1,self.Pos2 = self:GetPos(1) , self:GetPos(2)
-		self:ClearObjects()
+		if iNum > 0 then
+			self.Pos1 = self:GetPos(1)
+			self.Pos2 = self:GetPos(2)
+			self:ClearObjects()
+		else
+			self:SetStage(iNum + 1)
+		end
 	else
-		self:SetStage(iNum + 1)
+		local Owner = self:GetOwner()
+		if IsValid(Owner) then
+			Owner:ConCommand("openlgpeditor")
+		end
 	end
+
 	return true
 end
 
