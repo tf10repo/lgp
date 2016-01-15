@@ -1,5 +1,4 @@
-LGP = {}
-LGP.loadstring_cache = {}
+LGP = LGP or {}
 
 if not file.IsDir("lgp", "DATA") then
 	file.CreateDir("lgp")
