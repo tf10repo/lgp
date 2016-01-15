@@ -1,7 +1,13 @@
-TOOL.Category = "LGP"
-TOOL.Name = "#LGP"
+TOOL.Category = "lgp"
+TOOL.Name = "lgp"
 TOOL.Command = nil
-TOOL.ConfigName = ""
+
+if CLIENT then
+	language.Add("tool.lgp.name", "Lua Graphics Processor")
+	language.Add("tool.lgp.0", "LEFT CLICK: spawn a LGP RIGHT CLICK: open editor")
+	language.Add("tool.lgp.desc", "EGP but lua")
+end
+
 TOOL.Boxes = {}
 TOOL.Strings = {}
 
@@ -17,45 +23,16 @@ function TOOL:LeftClick( trace )
 	return true
 end
 
-function TOOL:RightClick( trace )
-	local tr = util.TraceLine(
-		{
-			start = trace.HitPos,
-			endpos = trace.HitPos + Vector(0,0, 10000),
-			filter = function( ent )
-				if ent:GetClass() == "prop_physics" then
-					return true
-				end
-			end
-		}
-	)
-
-	if IsValid(tr.Entity) then
-		local iNum = self:NumObjects()
-		local Phys = tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone )
-		self:SetObject( iNum + 1, tr.Entity, tr.HitPos, Phys, tr.PhysicsBone, tr.HitNormal )
-
-		if iNum > 0 then
-			self.Pos1 = self:GetPos(1)
-			self.Pos2 = self:GetPos(2)
-			self:ClearObjects()
-		else
-			self:SetStage(iNum + 1)
-		end
-	else
-		local Owner = self:GetOwner()
-		if IsValid(Owner) then
-			Owner:ConCommand("openlgpeditor")
-		end
+function TOOL:RightClick( trace ) 
+	local Owner = self:GetOwner()
+	if IsValid(Owner) and Owner:IsAdmin() then
+		Owner:ConCommand("openlgpeditor")
 	end
-
 	return true
 end
 
 function TOOL:BuildCPanel( panel )
-
 end
 
 function TOOL:Reload()
-
 end
