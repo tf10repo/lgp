@@ -1,4 +1,4 @@
-
+LGP = LGP or {}
 
 function LGP.Render()
 	local Entities = ents.FindByClass("gmod_wire_lgp")
