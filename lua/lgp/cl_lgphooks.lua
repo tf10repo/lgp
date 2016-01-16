@@ -1,5 +1,3 @@
-LGP = LGP or {}
-
 function LGP.Render()
 	local Entities = ents.FindByClass("gmod_wire_lgp")
 	for Index, Entity in pairs(Entities) do

@@ -1,5 +1,3 @@
-LGP = LGP or {}
-
 if not file.IsDir("lgp", "DATA") then
 	file.CreateDir("lgp")
 end
