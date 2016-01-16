@@ -12,18 +12,11 @@ TOOL.Boxes = {}
 TOOL.Strings = {}
 
 function TOOL:LeftClick( trace )
-	local iNum = self:NumObjects()
-	local Phys = trace.Entity:GetPhysicsObjectNum( trace.PhysicsBone )
-	self:SetObject( iNum + 1, trace.Entity, trace.HitPos, Phys, trace.PhysicsBone, trace.HitNormal )
-	if iNum > 0 then
-		self:ClearObjects()
-	else
-		self:SetStage( iNum + 1 )
-	end
+	-- Spawn a LGP
 	return true
 end
 
-function TOOL:RightClick( trace ) 
+function TOOL:RightClick( trace )
 	local Owner = self:GetOwner()
 	if IsValid(Owner) and Owner:IsAdmin() then
 		Owner:ConCommand("openlgpeditor")
