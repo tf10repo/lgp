@@ -4,8 +4,10 @@ TOOL.Command = nil
 
 if CLIENT then
 	language.Add("tool.lgp.name", "Lua Graphics Processor")
-	language.Add("tool.lgp.0", "LEFT CLICK: spawn a LGP RIGHT CLICK: open editor")
-	language.Add("tool.lgp.desc", "EGP but lua")
+	language.Add("tool.lgp.0", "Left Click: spawn a LGP Right Clcik: open editor")
+	language.Add("tool.lgp.desc", "EGP but Lua")
+elseif SERVER then
+	CreateConVar('sbox_maxwire_lgp', 20)
 end
 
 TOOL.Boxes = {}
@@ -24,7 +26,22 @@ function TOOL:RightClick( trace )
 	return true
 end
 
-function TOOL:BuildCPanel( panel )
+if CLIENT then
+	function TOOL:BuildCPanel(panel)
+		local FileBrowser = vgui.Create("wire_expression2_browser", panel)
+		FileBrowser.OpenOnSingleClick = wire_expression2_editor
+		panel:AddPanel(FileBrowser)
+
+		FileBrowser:Setup("lgp")
+		FileBrowser:SetSize(w, 300)
+		FileBrowser:DockMargin(5, 5, 5, 5)
+		FileBrowser:DockPadding(5, 5, 5, 5)
+		FileBrowser:Dock(TOP)
+
+		function FileBrowser:OnFileOpen(filepath, newtab)
+			game.ConsoleCommand("openlgpeditor\n")
+		end
+	end
 end
 
 function TOOL:Reload()

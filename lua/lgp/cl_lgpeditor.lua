@@ -54,7 +54,11 @@ function Editor:AddTab(Name, Contents, Path)
 	Tab.HTML:Dock(FILL)
 	Tab.HTML:OpenURL("http://fi.apex.gs/luaeditor")
 	Tab.HTML:SetAllowLua(true)
-	Tab.HTML:RunJavascript([[SetContent(]]..string.format("%q", Contents)..[[)]])
+	timer.Create("LGP_Content", 0.5, 1,
+		function ()
+			Tab.HTML:RunJavascript([[SetContent(]]..string.format("%q", Contents)..[[)]])
+		end
+	)
 
 	function Tab:OnMousePressed(Code, ...)
 		if Code == MOUSE_RIGHT then
@@ -133,7 +137,7 @@ function Editor:Init()
 	self.ValidateButton:SetText("Validate")
 	self.ValidateButton.ValidationColor = Color(200, 200, 200)
 	function self.ValidateButton:DoClick()
-		Editor:Validate(Editor:GetCode())
+		timer.Create("LGP_Validate", 0.01, 1, function () Editor:Validate(Editor:GetCode()) end)
 	end
 
 	function self.ValidateButton:Paint(w, h)
