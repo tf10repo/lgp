@@ -19,6 +19,18 @@ function Editor:OpenFile()
 end
 
 function Editor:Save(Tab)
+	Tab:GetCode()
+	if Tab.Path then
+		notification.AddProgress("LGP_Save", "Saving file...")
+		timer.Simple(0.3,
+			function ()
+				file.Write(Tab.Path:sub(6), self.Script)
+				notification.Kill("LGP_Save")
+				timer.Simple(1, function () notification.AddProgress("LGP_Saved", "File saved successfully") end)
+				timer.Simple(3, function () notification.Kill("LGP_Saved") end)
+			end
+		)
+	end
 end
 
 function Editor:Validate(Code, File)
@@ -54,7 +66,7 @@ function Editor:AddTab(Name, Contents, Path)
 	Tab.HTML:Dock(FILL)
 	Tab.HTML:OpenURL("http://fi.apex.gs/luaeditor")
 	Tab.HTML:SetAllowLua(true)
-	timer.Create("LGP_Content", 0.5, 1,
+	timer.Simple(0.5,
 		function ()
 			Tab.HTML:RunJavascript([[SetContent(]]..string.format("%q", Contents)..[[)]])
 		end
@@ -83,7 +95,6 @@ function Editor:AddTab(Name, Contents, Path)
 
 	function Tab:GetCode()
 		self.HTML:RunJavascript("getCode()")
-		return Editor.Script or ""
 	end
 
 	return Tab
@@ -91,10 +102,16 @@ end
 
 function Editor:GetCode()
 	local Tab = self.Column:GetActiveTab()
-	return Tab:GetCode(), Tab.Name
+	Tab:GetCode()
+	self.ScriptName = Tab.Name
 end
 
 function Editor:OnSelectFile(Path)
+	for Index, Sheet in pairs(self.Column.Items) do
+		if Sheet.Tab.Path and Sheet.Tab.Path == Path then
+			return self.Column:SetActiveTab(Sheet.Tab)
+		end
+	end
 	self:AddTab(nil, file.Read(Path, "GAME"), Path)
 end
 
@@ -137,8 +154,14 @@ function Editor:Init()
 	self.ValidateButton:SetText("Validate")
 	self.ValidateButton.ValidationColor = Color(200, 200, 200)
 	function self.ValidateButton:DoClick()
-		timer.Create("LGP_Validate", 0.01, 1, function () Editor:Validate(Editor:GetCode()) end)
+		Editor:GetCode()
+		timer.Simple(0.01, function () Editor:Validate(Editor.Script, Editor.ScriptName) end)
 	end
+
+	self.UploadButton = vgui.Create("DButton", self)
+	self.UploadButton:SetPos(Width - 70, 28)
+	self.UploadButton:SetSize(60, 24)
+	self.UploadButton:SetText("Upload")
 
 	function self.ValidateButton:Paint(w, h)
 		draw.RoundedBox(5, 0, 0, w, h, self.ValidationColor)
