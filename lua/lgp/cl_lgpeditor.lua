@@ -7,7 +7,7 @@ local ValidColor = Color(0, 200, 0)
 
 local Editor = {}
 local DefaultText = [[
-Welcome to the LGP editor
+-- Welcome to the LGP editor
 ]]
 
 function Editor:NewFile()
@@ -182,23 +182,18 @@ function Editor:PerformLayout()
 	local Width , Height = self:GetWide(), self:GetTall()
 
 	self.Browser:SetPos(10, 60)
-    self.Browser:SetSize(260, Height - 70)
+   self.Browser:SetSize(260, Height - 70)
 
  	self.Column:SetPos(280, 60)
-    self.Column:SetSize(Width - 290, Height - 95)
+   self.Column:SetSize(Width - 290, Height - 95)
 
-    self.ValidateButton:SetPos(280, Height - 30)
+   self.ValidateButton:SetPos(280, Height - 30)
 	self.ValidateButton:SetSize(Width - 290, 20)
 end
 
-
 vgui.Register("LGP_Editor", Editor, "DFrame")
 
-concommand.Add("openlgpeditor",
-	function ()
-		if LGP.Editor then
-			LGP.Editor:Remove()
-		end
-		LGP.Editor = vgui.Create("LGP_Editor")
-	end
-)
+if LGP.Editor then
+	LGP.Editor:Remove()
+end
+LGP.Editor = vgui.Create("LGP_Editor")

@@ -10,12 +10,35 @@ elseif SERVER then
 	CreateConVar('sbox_maxwire_lgp', 20)
 end
 
+cleanup.Register("wire_lgps")
+
 TOOL.Boxes = {}
 TOOL.Strings = {}
 
-function TOOL:LeftClick( trace )
-	-- Spawn a LGP
-	return true
+if SERVER then
+
+	local function MakeWireLGP(Owner, Model, Angle, Position)
+		local LGP = ents.Create("gmod_wire_lgp")
+		LGP:SetPlayer(Owner)
+		--LGP:SetOWner(Owner)
+		--LGP:SetAngles(Angle)
+		LGP:SetPos(Position)
+
+		LGP:Spawn()
+
+		Owner:AddCount( "wire_lgps", LGP )
+
+		return LGP
+	end
+
+	function TOOL:LeftClick( trace )
+		local Owner = self:GetOwner()
+		if IsValid(Owner) and Owner:IsAdmin() then
+			MakeWireLGP(Owner, nil, trace.Angle, trace.HitPos)
+		end
+		return true
+	end
+
 end
 
 function TOOL:RightClick( trace )
@@ -27,7 +50,7 @@ function TOOL:RightClick( trace )
 end
 
 if CLIENT then
-	function TOOL:BuildCPanel(panel)
+	function TOOL.BuildCPanel(panel)
 		local FileBrowser = vgui.Create("wire_expression2_browser", panel)
 		FileBrowser.OpenOnSingleClick = wire_expression2_editor
 		panel:AddPanel(FileBrowser)

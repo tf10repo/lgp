@@ -1,7 +1,9 @@
 function LGP.Render()
 	local Entities = ents.FindByClass("gmod_wire_lgp")
 	for Index, Entity in pairs(Entities) do
-		Entity:Render()
+		if IsValid(Entity) then
+			Entity:Render()
+		end
 	end
 end
 
