@@ -193,7 +193,11 @@ end
 
 vgui.Register("LGP_Editor", Editor, "DFrame")
 
-if LGP.Editor then
-	LGP.Editor:Remove()
-end
-LGP.Editor = vgui.Create("LGP_Editor")
+concommand.Add("openlgpeditor",
+	function ()
+		if LGP.Editor then
+			LGP.Editor:Remove()
+		end
+		LGP.Editor = vgui.Create("LGP_Editor")
+	end
+)
