@@ -1,2 +1,2 @@
 # LGP
-A Lua Graphics Processor for Wiremod!
+Lua Graphics Processor for Wiremod!
