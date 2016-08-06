@@ -52,7 +52,7 @@ elseif CLIENT then
 	function TOOL.BuildCPanel(panel)
 		local FileBrowser = vgui.Create("wire_expression2_browser", panel)
 		function FileBrowser.OnFileOpen(_, filepath, newtab)
-			RunConsoleCommand("openlgpeditor", filepath, newtab)
+			RunConsoleCommand("openlgpeditor", {filepath, newtab})
 		end
 		
 		FileBrowser:Setup("lgp")
