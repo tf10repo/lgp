@@ -39,17 +39,16 @@ if SERVER then
 		return true
 	end
 
-end
-
-function TOOL:RightClick( trace )
-	local Owner = self:GetOwner()
-	if IsValid(Owner) and Owner:IsAdmin() then
-		Owner:ConCommand("openlgpeditor")
+	function TOOL:RightClick( trace )
+		local Owner = self:GetOwner()
+		if IsValid(Owner) and Owner:IsAdmin() then
+			Owner:ConCommand("openlgpeditor")
+		end
+		return true
 	end
-	return true
-end
 
-if CLIENT then
+elseif CLIENT then
+
 	function TOOL.BuildCPanel(panel)
 		local FileBrowser = vgui.Create("wire_expression2_browser", panel)
 		FileBrowser.OpenOnSingleClick = wire_expression2_editor
@@ -65,6 +64,7 @@ if CLIENT then
 			game.ConsoleCommand("openlgpeditor\n")
 		end
 	end
+
 end
 
 function TOOL:Reload()
