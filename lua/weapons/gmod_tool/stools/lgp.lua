@@ -1,5 +1,5 @@
-TOOL.Category = "lgp"
-TOOL.Name = "lgp"
+TOOL.Category = "Lua Graphics Processor"
+TOOL.Name = "LGP"
 TOOL.Command = nil
 
 if CLIENT then
