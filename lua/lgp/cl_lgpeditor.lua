@@ -194,7 +194,7 @@ end
 vgui.Register("LGP_Editor", Editor, "DFrame")
 
 concommand.Add("openlgpeditor",
-	function ()
+	function (filepath, newtab)
 		if LGP.Editor then
 			LGP.Editor:Remove()
 		end

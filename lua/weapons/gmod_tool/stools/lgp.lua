@@ -51,18 +51,17 @@ elseif CLIENT then
 
 	function TOOL.BuildCPanel(panel)
 		local FileBrowser = vgui.Create("wire_expression2_browser", panel)
-		FileBrowser.OpenOnSingleClick = wire_expression2_editor
-		panel:AddPanel(FileBrowser)
-
+		function FileBrowser.OnFileOpen(_, filepath, newtab)
+			RunConsoleCommand("openlgpeditor\n", filepath, newtab)
+		end
+		
 		FileBrowser:Setup("lgp")
 		FileBrowser:SetSize(w, 300)
 		FileBrowser:DockMargin(5, 5, 5, 5)
 		FileBrowser:DockPadding(5, 5, 5, 5)
 		FileBrowser:Dock(TOP)
-
-		function FileBrowser:OnFileOpen(filepath, newtab)
-			RunConsoleCommand("openlgpeditor\n")
-		end
+		
+		panel:AddPanel(FileBrowser)
 	end
 
 end
