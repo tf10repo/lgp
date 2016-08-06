@@ -1,0 +1,1 @@
+LGP.UploadSpeed = CreateConVar("lgp_upload_speed", 150, FCVAR_LUA_SERVER + FCVAR_ARCHIVE, "LGP Upload Speed")

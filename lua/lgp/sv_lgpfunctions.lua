@@ -3,10 +3,11 @@ function LGP.GenerateHash()
 end
 
 function LGP:SendEntityCode(Player)
+	local UploadSpeed = LGP.UploadSpeed:GetInt()
 	local Script = util.Compress(self.Script)
 	local Parts = {}
-	for i = 1, math.ceil(#Script / LGP.UploadSpeed) do
-		table.insert(Parts, Script:sub(i * LGP.UploadSpeed, (i + 1) * LGP.UploadSpeed - 1))
+	for i = 1, math.ceil(#Script / UploadSpeed) do
+		table.insert(Parts, Script:sub(i * UploadSpeed, (i + 1) * UploadSpeed - 1))
 	end
 
 	local Hash = LGP.GenerateHash()
@@ -39,10 +40,11 @@ function LGP:SendEntityCode(Player)
 end
 
 function LGP:SendEntityCodeBroadcast(Entity)
+	local UploadSpeed = LGP.UploadSpeed:GetInt()
 	local Script = util.Compress(self.Script)
 	local Parts = {}
-	for i = 1, math.ceil(#Script / LGP.UploadSpeed) do
-		table.insert(Parts, Script:sub(i * LGP.UploadSpeed, (i + 1) * LGP.UploadSpeed - 1))
+	for i = 1, math.ceil(#Script / UploadSpeed) do
+		table.insert(Parts, Script:sub(i * UploadSpeed, (i + 1) * UploadSpeed - 1))
 	end
 
 	local Hash = LGP.GenerateHash()
