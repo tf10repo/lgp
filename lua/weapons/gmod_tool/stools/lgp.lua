@@ -61,7 +61,7 @@ elseif CLIENT then
 		FileBrowser:Dock(TOP)
 
 		function FileBrowser:OnFileOpen(filepath, newtab)
-			game.ConsoleCommand("openlgpeditor\n")
+			RunConsoleCommand("openlgpeditor\n")
 		end
 	end
 
